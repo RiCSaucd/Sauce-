@@ -535,7 +535,11 @@
 
     /* ── Responsive ── */
     @media (max-width: 420px) {
-      .h-window { width: calc(100vw - 18px); height: calc(100svh - 110px); }
+      /* vh fallback first, then svh override for browsers that support it */
+      .h-window { width: calc(100vw - 18px); height: calc(100vh - 110px); }
+      @supports (height: 100svh) {
+        .h-window { height: calc(100svh - 110px); }
+      }
       #hermes-widget { bottom: 16px; right: 10px; }
     }
   </style>
@@ -644,16 +648,23 @@
 (function () {
   'use strict';
 
+  /* ── Constants ─────────────────────────────────────────── */
+  var NOTIF_BADGE_DELAY_MS = 3000; // ms before notification badge appears
+
+  /* ── Phase constants ────────────────────────────────────── */
+  var PHASE = { IDLE: 'idle', FLOWING: 'flowing', DONE: 'done' };
+
   /* ── State ─────────────────────────────────────────────── */
   var state = {
     open: false,
     leadsOpen: false,
-    phase: 'idle',   // idle | flowing | done
+    phase: PHASE.IDLE,
     flowKey: null,
     stepIdx: 0,
     lead: null,
     leads: [],
-    initialized: false
+    initialized: false,
+    _leadCounter: 0
   };
 
   /* ── Emergency keywords ─────────────────────────────────── */
@@ -840,11 +851,13 @@
   }
 
   function detectEmail(text) {
-    var m = text.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/);
+    // Matches common email formats; US-focused service so 2+ char TLDs cover typical cases
+    var m = text.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,10}/);
     return m ? m[0] : null;
   }
 
   function detectPhone(text) {
+    // US phone number formats (10-digit, optional country code +1)
     var m = text.match(/(\+?1[\s.\-]?)?\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4}/);
     return m ? m[0].trim() : null;
   }
@@ -1060,12 +1073,14 @@
   }
 
   async function hermesFlow(key) {
-    if (state.phase === 'flowing') return; // prevent double-trigger
-    state.phase = 'flowing';
+    if (state.phase === PHASE.FLOWING) return; // prevent double-trigger
+    state.phase = PHASE.FLOWING;
     state.flowKey = key;
     state.stepIdx = 0;
+    // Collision-safe ID: timestamp + counter + random suffix
+    state._leadCounter++;
     state.lead = {
-      id: Date.now(),
+      id: Date.now() + '_' + state._leadCounter + '_' + Math.random().toString(36).slice(2, 7),
       type: FLOWS[key].type,
       badge: FLOWS[key].badge,
       timestamp: new Date().toLocaleString(),
@@ -1134,7 +1149,7 @@
 
     // Emergency check
     if (step && step.checkEmergency && isEmergency(text)) {
-      state.phase = 'done';
+      state.phase = PHASE.DONE;
       appendEmergencyCard();
       setPlaceholder('Type a message…');
       return;
@@ -1145,7 +1160,7 @@
   }
 
   async function completeFlow() {
-    state.phase = 'done';
+    state.phase = PHASE.DONE;
     var closing = FLOWS[state.flowKey].closing(state.lead);
     await botSay(closing, 900);
     upsertLead(state.lead);
@@ -1153,7 +1168,7 @@
       await botSay("Is there anything else I can help you with? 😊", 600);
       setTimeout(function () {
         appendQuickActions();
-        state.phase = 'idle';
+        state.phase = PHASE.IDLE;
         setPlaceholder('Type a message or tap a button above…');
       }, 800);
     }, 1400);
@@ -1178,14 +1193,14 @@
     }
     if (isEmergency(text)) {
       appendEmergencyCard();
-      state.phase = 'done';
+      state.phase = PHASE.DONE;
       setPlaceholder('Type a message…');
       return;
     }
     // Generic fallback
     await botSay("Happy to help! Here are the ways I can assist you today:", 800);
     setTimeout(appendQuickActions, 900);
-    state.phase = 'idle';
+    state.phase = PHASE.IDLE;
   }
 
   /* ── User input handler ──────────────────────────────────── */
@@ -1195,7 +1210,7 @@
     if (!text) return;
     inp.value = '';
 
-    if (state.phase === 'flowing') {
+    if (state.phase === PHASE.FLOWING) {
       var flow = FLOWS[state.flowKey];
       var step = flow.steps[state.stepIdx];
       // Remove any pending chips for this step
@@ -1323,12 +1338,12 @@
       if (e.key === 'Enter') onSubmit();
     });
 
-    // Show notification badge after 3 s to invite engagement
+    // Show notification badge after configured delay to invite engagement
     setTimeout(function () {
       if (!state.open) {
         qs('h-notif-badge').classList.add('show');
       }
-    }, 3000);
+    }, NOTIF_BADGE_DELAY_MS);
   }
 
   if (document.readyState === 'loading') {

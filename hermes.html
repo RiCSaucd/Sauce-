@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hermes — AI Lead Agent | Ancient City PM &amp; Hatch Maintenance</title>
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Demo backdrop ── */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #060b14;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    .demo-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 20px 120px;
+      text-align: center;
+    }
+    .demo-hero-icon { font-size: 52px; margin-bottom: 16px; }
+    .demo-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      color: #d4af37;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+    .demo-subtitle {
+      font-size: 1.05rem;
+      color: #8a9bbf;
+      max-width: 520px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+    .demo-cards {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 640px;
+      margin-bottom: 40px;
+    }
+    .demo-card {
+      background: #111827;
+      border: 1px solid rgba(212,175,55,.18);
+      border-radius: 14px;
+      padding: 20px 24px;
+      flex: 1;
+      min-width: 220px;
+      text-align: left;
+    }
+    .demo-card-icon { font-size: 26px; margin-bottom: 8px; }
+    .demo-card-title { font-weight: 700; color: #d4af37; font-size: 14px; margin-bottom: 4px; }
+    .demo-card-desc { font-size: 12px; color: #6b7280; line-height: 1.6; }
+    .demo-cta {
+      font-size: 13px;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .demo-cta-arrow { font-size: 22px; color: #d4af37; animation: bounce 1.4s infinite; }
+    @keyframes bounce {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(6px); }
+    }
+
+    /* ══════════════════════════════════════════════
+       HERMES WIDGET
+    ══════════════════════════════════════════════ */
+    #hermes-widget {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Launcher */
+    .h-launcher-wrap { position: relative; }
+    .h-launcher {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d4af37, #f5cc50);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 4px 24px rgba(212,175,55,.55);
+      transition: transform .2s, box-shadow .2s, opacity .25s;
+      outline: none;
+    }
+    .h-launcher:hover { transform: scale(1.1); box-shadow: 0 6px 32px rgba(212,175,55,.7); }
+    .h-launcher.hidden { opacity: 0; pointer-events: none; }
+    .h-notif-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 20px;
+      height: 20px;
+      background: #ef4444;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #060b14;
+    }
+    .h-notif-badge.show { display: flex; }
+
+    /* Chat window */
+    .h-window {
+      position: absolute;
+      bottom: 76px;
+      right: 0;
+      width: 384px;
+      height: 620px;
+      background: #0d1117;
+      border-radius: 20px;
+      border: 1px solid rgba(212,175,55,.18);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.85), 0 0 0 1px rgba(212,175,55,.08);
+      opacity: 0;
+      transform: translateY(16px) scale(.96);
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .h-window.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+
+    /* Header */
+    .h-header {
+      background: linear-gradient(135deg, #0d1117, #0f1623);
+      border-bottom: 1px solid rgba(212,175,55,.15);
+      padding: 13px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .h-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c9a227, #f5cc50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .h-header-info { flex: 1; min-width: 0; }
+    .h-header-name { font-weight: 700; font-size: 15px; color: #fff; letter-spacing: .4px; }
+    .h-header-status {
+      font-size: 11px;
+      color: #4ade80;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .h-status-dot {
+      width: 6px;
+      height: 6px;
+      background: #4ade80;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .h-header-btns { display: flex; gap: 7px; align-items: center; flex-shrink: 0; }
+    .h-leads-btn {
+      background: rgba(212,175,55,.12);
+      border: 1px solid rgba(212,175,55,.35);
+      color: #d4af37;
+      padding: 5px 11px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .5px;
+      transition: background .2s;
+    }
+    .h-leads-btn:hover { background: rgba(212,175,55,.22); }
+    .h-close-btn {
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px;
+      border-radius: 4px;
+      line-height: 1;
+      transition: color .2s;
+    }
+    .h-close-btn:hover { color: #e2e8f0; }
+
+    /* Messages */
+    .h-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(212,175,55,.18) transparent;
+    }
+    .h-messages::-webkit-scrollbar { width: 4px; }
+    .h-messages::-webkit-scrollbar-track { background: transparent; }
+    .h-messages::-webkit-scrollbar-thumb { background: rgba(212,175,55,.2); border-radius: 2px; }
+
+    .h-msg {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      animation: msgIn .28s ease;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .h-msg.user { flex-direction: row-reverse; }
+
+    .h-bubble {
+      max-width: 78%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      font-size: 13.5px;
+      line-height: 1.55;
+      word-break: break-word;
+    }
+    .h-msg.bot  .h-bubble {
+      background: #161e30;
+      color: #e2e8f0;
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .h-msg.user .h-bubble {
+      background: linear-gradient(135deg, #c9a227, #d4af37);
+      color: #0d1117;
+      border-bottom-right-radius: 4px;
+      font-weight: 500;
+    }
+    .h-msg-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c9a227, #f5cc50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* Typing indicator */
+    .h-typing {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      animation: msgIn .28s ease;
+    }
+    .h-typing-bubble {
+      background: #161e30;
+      border: 1px solid rgba(255,255,255,.06);
+      padding: 12px 14px;
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .h-typing-dot {
+      width: 7px;
+      height: 7px;
+      background: #4b5563;
+      border-radius: 50%;
+      animation: typePulse 1.2s infinite;
+    }
+    .h-typing-dot:nth-child(2) { animation-delay: .2s; }
+    .h-typing-dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes typePulse {
+      0%,60%,100% { opacity: .3; transform: scale(1); }
+      30%          { opacity: 1;  transform: scale(1.25); }
+    }
+
+    /* Quick-action buttons */
+    .h-quick-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 2px;
+      flex: 1;
+    }
+    .h-quick-btn {
+      background: rgba(212,175,55,.07);
+      border: 1px solid rgba(212,175,55,.28);
+      color: #d4af37;
+      padding: 10px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      transition: background .2s, border-color .2s;
+    }
+    .h-quick-btn:hover { background: rgba(212,175,55,.15); border-color: rgba(212,175,55,.55); }
+    .h-quick-btn .qi { font-size: 18px; flex-shrink: 0; }
+    .h-quick-btn .qt { display: flex; flex-direction: column; gap: 1px; }
+    .h-quick-btn .ql { font-weight: 700; color: #fff; font-size: 13px; }
+    .h-quick-btn .qs { font-size: 11px; color: #8a9bbf; }
+
+    /* Chip options */
+    .h-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      flex: 1;
+      margin-top: 2px;
+    }
+    .h-chip {
+      background: rgba(212,175,55,.09);
+      border: 1px solid rgba(212,175,55,.3);
+      color: #d4af37;
+      padding: 6px 13px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .h-chip:hover { background: rgba(212,175,55,.2); transform: scale(1.03); }
+
+    /* Emergency card */
+    .h-emergency {
+      background: linear-gradient(135deg, rgba(239,68,68,.14), rgba(220,38,38,.08));
+      border: 1px solid rgba(239,68,68,.45);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 13px;
+      color: #fca5a5;
+      line-height: 1.6;
+      flex: 1;
+    }
+    .h-emergency-title {
+      color: #ef4444;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .h-emergency-phone {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ef4444;
+      display: block;
+      margin: 6px 0;
+    }
+
+    /* Input area */
+    .h-input-area {
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding: 11px 14px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+      background: #0d1117;
+    }
+    .h-input {
+      flex: 1;
+      background: #161e30;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 12px;
+      padding: 9px 13px;
+      font-size: 13.5px;
+      color: #e2e8f0;
+      outline: none;
+      transition: border-color .2s;
+      font-family: inherit;
+    }
+    .h-input:focus { border-color: rgba(212,175,55,.4); }
+    .h-input::placeholder { color: #3d4a5c; }
+    .h-send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c9a227, #d4af37);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0d1117;
+      font-size: 15px;
+      flex-shrink: 0;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .h-send-btn:hover { transform: scale(1.1); box-shadow: 0 2px 14px rgba(212,175,55,.45); }
+
+    /* Footer */
+    .h-footer {
+      text-align: center;
+      padding: 5px 12px 7px;
+      font-size: 10px;
+      color: #2d3748;
+      flex-shrink: 0;
+      letter-spacing: .3px;
+    }
+
+    /* ── Leads panel ── */
+    .h-leads-panel {
+      position: absolute;
+      inset: 0;
+      background: #0d1117;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .h-leads-panel.open { transform: translateX(0); }
+    .h-leads-header {
+      background: linear-gradient(135deg, #0d1117, #0f1623);
+      border-bottom: 1px solid rgba(212,175,55,.15);
+      padding: 13px 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .h-leads-back {
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 20px;
+      padding: 2px;
+      line-height: 1;
+      transition: color .2s;
+    }
+    .h-leads-back:hover { color: #e2e8f0; }
+    .h-leads-title { flex: 1; font-weight: 700; font-size: 15px; color: #d4af37; letter-spacing: .4px; }
+    .h-leads-count {
+      background: rgba(212,175,55,.15);
+      border: 1px solid rgba(212,175,55,.3);
+      color: #d4af37;
+      border-radius: 12px;
+      padding: 2px 9px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .h-leads-body { flex: 1; overflow-y: auto; padding: 14px; scrollbar-width: thin; scrollbar-color: rgba(212,175,55,.15) transparent; }
+    .h-leads-body::-webkit-scrollbar { width: 4px; }
+    .h-leads-body::-webkit-scrollbar-thumb { background: rgba(212,175,55,.18); border-radius: 2px; }
+
+    /* Lead card */
+    .h-lead-card {
+      background: #131c2e;
+      border: 1px solid rgba(212,175,55,.14);
+      border-radius: 13px;
+      padding: 14px;
+      margin-bottom: 12px;
+      animation: msgIn .25s ease;
+    }
+    .h-lead-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .h-lead-name { font-weight: 700; font-size: 15px; color: #fff; }
+    .h-lead-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 10px;
+      letter-spacing: .5px;
+      white-space: nowrap;
+    }
+    .h-lead-badge.pm         { background: rgba(99,102,241,.18);  color: #a5b4fc; border: 1px solid rgba(99,102,241,.3); }
+    .h-lead-badge.maintenance{ background: rgba(16,185,129,.18);  color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
+    .h-lead-badge.tenant     { background: rgba(245,158,11,.18);  color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
+    .h-lead-field {
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+      margin-bottom: 5px;
+      line-height: 1.5;
+    }
+    .h-lead-label { color: #4b5563; min-width: 52px; flex-shrink: 0; font-weight: 600; }
+    .h-lead-value { color: #b0bec5; word-break: break-word; }
+    .h-lead-notes { margin-top: 10px; }
+    .h-lead-notes-ta {
+      width: 100%;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #b0bec5;
+      resize: none;
+      outline: none;
+      min-height: 58px;
+      font-family: inherit;
+      transition: border-color .2s;
+    }
+    .h-lead-notes-ta:focus { border-color: rgba(212,175,55,.3); }
+    .h-lead-notes-ta::placeholder { color: #2d3748; }
+
+    /* No leads placeholder */
+    .h-no-leads { text-align: center; color: #4b5563; padding: 48px 20px; }
+    .h-no-leads-icon { font-size: 40px; margin-bottom: 12px; }
+    .h-no-leads-text { font-size: 14px; margin-bottom: 6px; }
+    .h-no-leads-hint { font-size: 12px; color: #2d3748; }
+
+    /* ── Responsive ── */
+    @media (max-width: 420px) {
+      /* vh fallback first, then svh override for browsers that support it */
+      .h-window { width: calc(100vw - 18px); height: calc(100vh - 110px); }
+      @supports (height: 100svh) {
+        .h-window { height: calc(100svh - 110px); }
+      }
+      #hermes-widget { bottom: 16px; right: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ Demo backdrop ══════════════════════════════════════ -->
+<div class="demo-page">
+  <div class="demo-hero-icon">⚡</div>
+  <h1 class="demo-title">Hermes is Live</h1>
+  <p class="demo-subtitle">
+    Your AI outreach &amp; lead qualification agent for
+    <strong style="color:#d4af37">Ancient City Property Management</strong>
+    and
+    <strong style="color:#d4af37">Hatch Property Maintenance</strong>.
+  </p>
+
+  <div class="demo-cards">
+    <div class="demo-card">
+      <div class="demo-card-icon">🏠</div>
+      <div class="demo-card-title">Ancient City PM</div>
+      <div class="demo-card-desc">
+        Full-service property management — 8%, 10%, and 18% tiers.
+        Serving St. Augustine &amp; St. Johns County.
+      </div>
+    </div>
+    <div class="demo-card">
+      <div class="demo-card-icon">🌿</div>
+      <div class="demo-card-title">Hatch Maintenance</div>
+      <div class="demo-card-desc">
+        Mowing from $35 · Handyman $50/hr · Pressure washing $75–$300.
+        All of St. Johns County.
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-cta">
+    <span>Tap the gold button to chat with Hermes</span>
+    <span class="demo-cta-arrow">↘</span>
+  </div>
+</div>
+
+<!-- ══ HERMES WIDGET ════════════════════════════════════════ -->
+<div id="hermes-widget">
+  <!-- Launcher -->
+  <div class="h-launcher-wrap">
+    <button class="h-launcher" id="h-launcher" aria-label="Chat with Hermes">⚡</button>
+    <div class="h-notif-badge" id="h-notif-badge">1</div>
+  </div>
+
+  <!-- Chat window -->
+  <div class="h-window" id="h-window" role="dialog" aria-label="Hermes AI Chat">
+
+    <!-- Header -->
+    <div class="h-header">
+      <div class="h-avatar">⚡</div>
+      <div class="h-header-info">
+        <div class="h-header-name">HERMES</div>
+        <div class="h-header-status">
+          <div class="h-status-dot"></div>AI Lead Agent &bull; Online
+        </div>
+      </div>
+      <div class="h-header-btns">
+        <button class="h-leads-btn" id="h-leads-btn">LEADS</button>
+        <button class="h-close-btn" id="h-close-btn" aria-label="Close chat">✕</button>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="h-messages" id="h-messages"></div>
+
+    <!-- Input -->
+    <div class="h-input-area">
+      <input
+        type="text"
+        class="h-input"
+        id="h-input"
+        placeholder="Type a message…"
+        autocomplete="off"
+        aria-label="Chat input"
+      />
+      <button class="h-send-btn" id="h-send-btn" aria-label="Send">&#10148;</button>
+    </div>
+
+    <div class="h-footer">Powered by Hermes AI &bull; Ancient City PM &amp; Hatch Maintenance</div>
+
+    <!-- Leads panel (slides in over chat) -->
+    <div class="h-leads-panel" id="h-leads-panel" role="region" aria-label="Captured Leads">
+      <div class="h-leads-header">
+        <button class="h-leads-back" id="h-leads-back" aria-label="Back to chat">&#8592;</button>
+        <div class="h-leads-title">&#128203; CAPTURED LEADS</div>
+        <div class="h-leads-count" id="h-leads-count">0</div>
+      </div>
+      <div class="h-leads-body" id="h-leads-body"></div>
+    </div>
+
+  </div><!-- /h-window -->
+</div><!-- /hermes-widget -->
+
+<script>
+/* ============================================================
+   HERMES — AI Lead Qualification Agent
+   Ancient City Property Management · Hatch Property Maintenance
+   ============================================================ */
+
+(function () {
+  'use strict';
+
+  /* ── Constants ─────────────────────────────────────────── */
+  var NOTIF_BADGE_DELAY_MS = 3000; // ms before notification badge appears
+
+  /* ── Phase constants ────────────────────────────────────── */
+  var PHASE = { IDLE: 'idle', FLOWING: 'flowing', DONE: 'done' };
+
+  /* ── State ─────────────────────────────────────────────── */
+  var state = {
+    open: false,
+    leadsOpen: false,
+    phase: PHASE.IDLE,
+    flowKey: null,
+    stepIdx: 0,
+    lead: null,
+    leads: [],
+    initialized: false,
+    _leadCounter: 0
+  };
+
+  /* ── Emergency keywords ─────────────────────────────────── */
+  var EMERGENCY_TERMS = [
+    'flood', 'flooding', 'flooded',
+    'fire', 'smoke', 'burning',
+    'gas leak', 'gas smell', 'smell gas', 'smell like gas',
+    'no ac', 'no air conditioning', 'air not working', 'ac broken', 'ac out',
+    'burst pipe', 'water gushing', 'ceiling collapse', 'roof collapse',
+    'electrical fire', 'sparks', 'carbon monoxide',
+    'break in', 'break-in', 'intruder', 'someone broke in',
+    'sewage overflow', 'raw sewage',
+    'no heat', 'heat not working', 'frozen pipe'
+  ];
+
+  /* ── Conversation flows ─────────────────────────────────── */
+  var FLOWS = {
+    propertyManagement: {
+      badge: 'pm',
+      type: 'Property Management',
+      icon: '🏠',
+      label: 'Property Management',
+      sublabel: 'Get a free rental analysis',
+      intro: [
+        "Great choice! Ancient City PM has been serving St. Augustine and St. Johns County property owners for years. 🏠",
+        "Let me ask a few quick questions to put together your **free rental analysis**."
+      ],
+      steps: [
+        {
+          msg: "How many rental properties do you own — or are you looking to have managed?",
+          field: 'propertyCount',
+          hint: 'e.g. 1 property, 3 units…'
+        },
+        {
+          msg: "What's the property address or general area? (e.g. St. Augustine, Ponte Vedra, Nocatee, Palm Coast)",
+          field: 'propertyAddress',
+          hint: 'e.g. 123 Bay St, St. Augustine…'
+        },
+        {
+          msg: "Is the property currently **vacant** or **occupied** by a tenant?",
+          field: 'propertyStatus',
+          options: ['Vacant — needs a tenant', 'Occupied — has a tenant', 'Multiple — mixed status'],
+          hint: 'Select or type your answer'
+        },
+        {
+          msg: "What's your biggest challenge managing your rental right now? (e.g. collecting rent on time, finding quality tenants, maintenance headaches, just too time-consuming…)",
+          field: 'painPoint',
+          hint: 'Tell me what\'s frustrating you most…'
+        },
+        { msg: "What's your name?",          field: 'name',  hint: 'First name is fine' },
+        { msg: "What email should I send your free rental analysis to?", field: 'email', hint: 'you@example.com' },
+        { msg: "And the best phone number to reach you?", field: 'phone', hint: '(904) 555-0100' }
+      ],
+      closing: function (lead) {
+        return "Perfect, " + (lead.name || "thanks") + "! Here's a quick snapshot: 🎉\n\n" +
+          "**Ancient City PM Pricing:**\n" +
+          "• **8%/month** — Leasing & basic management\n" +
+          "• **10%/month** — Full-service (most popular)\n" +
+          "• **18%/month** — Premium with maintenance coordination\n\n" +
+          "**St. Augustine Market:** Average SFH rents run $1,800–$2,400/mo. Vacancy is under 4% — one of the lowest in Florida. Great time to be a landlord.\n\n" +
+          "Your free rental analysis is being prepared. Expect a call or email within 1 business day. You can also reach us directly at **(904) 342-4530**.";
+      }
+    },
+
+    lawnMaintenance: {
+      badge: 'maintenance',
+      type: 'Lawn & Maintenance',
+      icon: '🌿',
+      label: 'Lawn & Maintenance',
+      sublabel: 'Free estimate for your property',
+      intro: [
+        "Awesome! Hatch Property Maintenance covers all of St. Johns County — lawn care, handyman work, pressure washing, and more. 🌿",
+        "Let me grab a few details to put together your **free estimate**."
+      ],
+      steps: [
+        {
+          msg: "What service do you need?",
+          field: 'serviceType',
+          options: ['Lawn mowing / maintenance', 'Handyman repair', 'Pressure washing', 'Landscaping / mulch', 'Multiple services'],
+          hint: 'Select one or describe what you need'
+        },
+        {
+          msg: "Is this for a **residential** or **commercial** property?",
+          field: 'propertyType',
+          options: ['Residential', 'Commercial', 'HOA / Community'],
+          hint: 'Select one'
+        },
+        { msg: "What's the property address?", field: 'propertyAddress', hint: 'e.g. 456 Ocean Ave, St. Augustine…' },
+        {
+          msg: "How urgent is this?",
+          field: 'urgency',
+          options: ['ASAP — today or tomorrow', 'This week', 'Flexible — within 2 weeks'],
+          hint: 'Select one'
+        },
+        { msg: "What's your name?", field: 'name', hint: 'First name is fine' },
+        { msg: "Best email for the estimate?",             field: 'email', hint: 'you@example.com' },
+        { msg: "And a phone number we can reach you at?",  field: 'phone', hint: '(904) 555-0100' }
+      ],
+      closing: function (lead) {
+        return "Got it, " + (lead.name || "thanks") + "! Here's what to expect: ✅\n\n" +
+          "**Hatch Maintenance Pricing:**\n" +
+          "• Lawn mowing — from **$35/cut** (varies by lot size)\n" +
+          "• Handyman work — **$50/hr** (2-hr minimum)\n" +
+          "• Pressure washing — **$75–$300** depending on area\n\n" +
+          "A Hatch team member will reach out within a few hours to confirm your free estimate. For urgent needs, call **(904) 342-4530**.";
+      }
+    },
+
+    reportMaintenance: {
+      badge: 'tenant',
+      type: 'Maintenance Request',
+      icon: '🔧',
+      label: 'Report Maintenance Issue',
+      sublabel: 'Current tenants — submit a request',
+      intro: [
+        "Hi! I'll help you submit a maintenance request. 🔧",
+        "First — **is this an emergency?** (flood, fire, gas smell, no AC in extreme heat) If yes, call **(904) 342-4530** or **911** immediately."
+      ],
+      steps: [
+        {
+          msg: "What's the issue you're reporting? Please describe it.",
+          field: 'issue',
+          hint: 'Describe the problem…',
+          checkEmergency: true
+        },
+        { msg: "What's your unit or property address?", field: 'propertyAddress', hint: 'e.g. 789 Bay St, Unit 2A' },
+        { msg: "What's your name?",                     field: 'name',            hint: 'Your full name' },
+        { msg: "Best phone number to reach you?",       field: 'phone',           hint: '(904) 555-0100' }
+      ],
+      closing: function (lead) {
+        return "Thanks, " + (lead.name || "there") + "! Your maintenance request has been logged. ✅\n\n" +
+          "Our team will review it and contact you within **1 business day**. For urgent (non-emergency) issues, call **(904) 342-4530**.";
+      }
+    },
+
+    freeEstimate: {
+      badge: 'maintenance',
+      type: 'Free Estimate',
+      icon: '⚡',
+      label: 'Get a Free Estimate',
+      sublabel: 'Fast-track your estimate request',
+      intro: [
+        "Let's get you a free estimate from Hatch Property Maintenance — fast! ⚡"
+      ],
+      steps: [
+        {
+          msg: "What type of service do you need an estimate for?",
+          field: 'serviceType',
+          options: ['Lawn mowing / maintenance', 'Handyman repair', 'Pressure washing', 'Landscaping', 'Other / Not sure'],
+          hint: 'Select one or describe…'
+        },
+        { msg: "Property address?",                               field: 'propertyAddress', hint: 'e.g. 123 Main St, St. Augustine…' },
+        { msg: "Your name?",                                      field: 'name',            hint: 'First name is fine' },
+        { msg: "Best way to reach you — email or phone number?",  field: 'contact',         hint: 'you@example.com or (904) 555-0100' }
+      ],
+      closing: function (lead) {
+        return "Perfect, " + (lead.name || "thanks") + "! ✅\n\n" +
+          "Your estimate request is in. A Hatch team member will follow up within a few hours.\n\n" +
+          "**Quick pricing guide:**\n" +
+          "• Mowing from **$35** · Handyman **$50/hr** · Pressure wash **$75–$300**\n\n" +
+          "You can also book directly by calling **(904) 342-4530**.";
+      }
+    }
+  };
+
+  /* ── Helpers ─────────────────────────────────────────────── */
+  function qs(id) { return document.getElementById(id); }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function fmtBot(text) {
+    // Escape HTML first, then apply lightweight markdown
+    return escHtml(text)
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g,     '<em>$1</em>')
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g,   '<br>');
+  }
+
+  function detectEmail(text) {
+    // Matches common email formats; US-focused service so 2+ char TLDs cover typical cases
+    var m = text.match(/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,10}/);
+    return m ? m[0] : null;
+  }
+
+  function detectPhone(text) {
+    // US phone number formats (10-digit, optional country code +1)
+    var m = text.match(/(\+?1[\s.\-]?)?\(?\d{3}\)?[\s.\-]?\d{3}[\s.\-]?\d{4}/);
+    return m ? m[0].trim() : null;
+  }
+
+  function isEmergency(text) {
+    var lower = text.toLowerCase();
+    return EMERGENCY_TERMS.some(function (kw) { return lower.indexOf(kw) !== -1; });
+  }
+
+  function scrollBottom() {
+    var el = qs('h-messages');
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  /* ── Load / save leads ──────────────────────────────────── */
+  function loadLeads() {
+    try {
+      state.leads = JSON.parse(localStorage.getItem('hermes_leads') || '[]');
+    } catch (e) {
+      state.leads = [];
+    }
+  }
+
+  function saveLeads() {
+    try {
+      localStorage.setItem('hermes_leads', JSON.stringify(state.leads));
+    } catch (e) { /* quota exceeded – silently ignore */ }
+  }
+
+  function upsertLead(lead) {
+    var idx = state.leads.findIndex(function (l) { return l.id === lead.id; });
+    var copy = Object.assign({}, lead);
+    if (idx >= 0) {
+      state.leads[idx] = copy;
+    } else {
+      state.leads.unshift(copy);
+    }
+    saveLeads();
+    updateLeadsCount();
+  }
+
+  function updateLeadsCount() {
+    var el = qs('h-leads-count');
+    if (el) el.textContent = state.leads.length;
+  }
+
+  /* ── DOM builders ───────────────────────────────────────── */
+  function appendMsg(html, role) {
+    var wrap = document.createElement('div');
+    wrap.className = 'h-msg ' + role;
+    var avatarHtml = role === 'bot'
+      ? '<div class="h-msg-avatar">⚡</div>'
+      : '';
+    wrap.innerHTML = avatarHtml + '<div class="h-bubble">' + html + '</div>';
+    qs('h-messages').appendChild(wrap);
+    scrollBottom();
+    return wrap;
+  }
+
+  function appendBotText(text) {
+    removeTyping();
+    return appendMsg(fmtBot(text), 'bot');
+  }
+
+  function appendUserText(text) {
+    return appendMsg(escHtml(text), 'user');
+  }
+
+  function showTyping() {
+    removeTyping();
+    var el = document.createElement('div');
+    el.className = 'h-typing';
+    el.id = 'h-typing';
+    el.innerHTML =
+      '<div class="h-msg-avatar">⚡</div>' +
+      '<div class="h-typing-bubble">' +
+      '<div class="h-typing-dot"></div>' +
+      '<div class="h-typing-dot"></div>' +
+      '<div class="h-typing-dot"></div>' +
+      '</div>';
+    qs('h-messages').appendChild(el);
+    scrollBottom();
+  }
+
+  function removeTyping() {
+    var el = qs('h-typing');
+    if (el) el.parentNode.removeChild(el);
+  }
+
+  function botSay(text, delay) {
+    return new Promise(function (resolve) {
+      showTyping();
+      setTimeout(function () {
+        appendBotText(text);
+        resolve();
+      }, delay || 800);
+    });
+  }
+
+  function setPlaceholder(hint) {
+    var inp = qs('h-input');
+    if (inp) inp.placeholder = hint || 'Type a message…';
+  }
+
+  /* Quick-action buttons */
+  function appendQuickActions() {
+    var msgs = qs('h-messages');
+    var wrap = document.createElement('div');
+    wrap.className = 'h-msg bot';
+    wrap.id = 'h-quick-actions';
+
+    var avatar = document.createElement('div');
+    avatar.className = 'h-msg-avatar';
+    avatar.textContent = '⚡';
+
+    var qa = document.createElement('div');
+    qa.className = 'h-quick-actions';
+
+    var actions = [
+      'propertyManagement',
+      'lawnMaintenance',
+      'reportMaintenance',
+      'freeEstimate'
+    ];
+
+    actions.forEach(function (key) {
+      var f = FLOWS[key];
+      var btn = document.createElement('button');
+      btn.className = 'h-quick-btn';
+      btn.innerHTML =
+        '<span class="qi">' + f.icon + '</span>' +
+        '<span class="qt">' +
+        '<span class="ql">' + escHtml(f.label) + '</span>' +
+        '<span class="qs">' + escHtml(f.sublabel) + '</span>' +
+        '</span>';
+      btn.addEventListener('click', function () { hermesFlow(key); });
+      qa.appendChild(btn);
+    });
+
+    wrap.appendChild(avatar);
+    wrap.appendChild(qa);
+    msgs.appendChild(wrap);
+    scrollBottom();
+  }
+
+  function removeQuickActions() {
+    var el = qs('h-quick-actions');
+    if (el) el.parentNode.removeChild(el);
+  }
+
+  /* Chip option buttons */
+  function appendChips(options, fieldKey) {
+    var msgs = qs('h-messages');
+    var wrap = document.createElement('div');
+    wrap.className = 'h-msg bot';
+    wrap.id = 'h-chips-' + fieldKey;
+
+    var avatar = document.createElement('div');
+    avatar.className = 'h-msg-avatar';
+    avatar.textContent = '⚡';
+
+    var chipsDiv = document.createElement('div');
+    chipsDiv.className = 'h-chips';
+
+    options.forEach(function (opt) {
+      var btn = document.createElement('button');
+      btn.className = 'h-chip';
+      btn.textContent = opt;
+      btn.addEventListener('click', function () {
+        handleChipSelect(opt, fieldKey);
+      });
+      chipsDiv.appendChild(btn);
+    });
+
+    wrap.appendChild(avatar);
+    wrap.appendChild(chipsDiv);
+    msgs.appendChild(wrap);
+    scrollBottom();
+  }
+
+  function removeChips(fieldKey) {
+    var el = qs('h-chips-' + fieldKey);
+    if (el) el.parentNode.removeChild(el);
+  }
+
+  /* Emergency card */
+  function appendEmergencyCard() {
+    removeTyping();
+    var wrap = document.createElement('div');
+    wrap.className = 'h-msg bot';
+    var avatar = document.createElement('div');
+    avatar.className = 'h-msg-avatar';
+    avatar.textContent = '⚡';
+    var card = document.createElement('div');
+    card.className = 'h-emergency';
+    card.innerHTML =
+      '<div class="h-emergency-title">🚨 EMERGENCY DETECTED</div>' +
+      'This sounds like an emergency. Please call immediately:<br>' +
+      '<span class="h-emergency-phone">(904) 342-4530</span>' +
+      'For fire, gas leaks, or threats to life — call <strong>911</strong> first.';
+    wrap.appendChild(avatar);
+    wrap.appendChild(card);
+    qs('h-messages').appendChild(wrap);
+    scrollBottom();
+  }
+
+  /* ── Conversation engine ─────────────────────────────────── */
+  async function hermesInit() {
+    await botSay("Hey there! 👋 I'm **Hermes** — your AI agent for Ancient City Property Management and Hatch Property Maintenance.", 600);
+    await botSay("What brings you here today? Tap a quick-action or just type your question.", 1100);
+    appendQuickActions();
+    setPlaceholder('Type a message or tap a button above…');
+  }
+
+  async function hermesFlow(key) {
+    if (state.phase === PHASE.FLOWING) return; // prevent double-trigger
+    state.phase = PHASE.FLOWING;
+    state.flowKey = key;
+    state.stepIdx = 0;
+    // Collision-safe ID: timestamp + counter + random suffix
+    state._leadCounter++;
+    state.lead = {
+      id: Date.now() + '_' + state._leadCounter + '_' + Math.random().toString(36).slice(2, 7),
+      type: FLOWS[key].type,
+      badge: FLOWS[key].badge,
+      timestamp: new Date().toLocaleString(),
+      name: null,
+      email: null,
+      phone: null,
+      propertyAddress: null,
+      notes: ''
+    };
+
+    removeQuickActions();
+    appendUserText(FLOWS[key].icon + ' ' + FLOWS[key].label);
+
+    var intro = FLOWS[key].intro;
+    for (var i = 0; i < intro.length; i++) {
+      await botSay(intro[i], i === 0 ? 700 : 500);
+    }
+    await advanceStep();
+  }
+
+  async function advanceStep() {
+    var flow = FLOWS[state.flowKey];
+    var step = flow.steps[state.stepIdx];
+    if (!step) {
+      await completeFlow();
+      return;
+    }
+    await botSay(step.msg, 600);
+    if (step.options) {
+      setTimeout(function () { appendChips(step.options, step.field); }, 650);
+    }
+    setPlaceholder(step.hint || 'Type your answer…');
+  }
+
+  async function handleChipSelect(value, fieldKey) {
+    removeChips(fieldKey);
+    appendUserText(value);
+    await processAnswer(value, fieldKey);
+  }
+
+  async function processAnswer(text, overrideField) {
+    var flow = FLOWS[state.flowKey];
+    var step = flow.steps[state.stepIdx];
+    var field = overrideField || (step && step.field);
+
+    // Auto-detect contact info from any answer
+    var email = detectEmail(text);
+    var phone = detectPhone(text);
+    if (email) state.lead.email = email;
+    if (phone) state.lead.phone = phone;
+
+    // Store field value
+    if (field && state.lead) {
+      state.lead[field] = text;
+      // Also try to set name/email/phone by field key
+      if (field === 'email' && !state.lead.email) state.lead.email = text;
+      if (field === 'phone' && !state.lead.phone) state.lead.phone = text;
+      if (field === 'contact') {
+        // freeEstimate contact field — detect type
+        if (!state.lead.email) state.lead.email = email || null;
+        if (!state.lead.phone) state.lead.phone = phone || null;
+      }
+    }
+
+    upsertLead(state.lead);
+
+    // Emergency check
+    if (step && step.checkEmergency && isEmergency(text)) {
+      state.phase = PHASE.DONE;
+      appendEmergencyCard();
+      setPlaceholder('Type a message…');
+      return;
+    }
+
+    state.stepIdx++;
+    await advanceStep();
+  }
+
+  async function completeFlow() {
+    state.phase = PHASE.DONE;
+    var closing = FLOWS[state.flowKey].closing(state.lead);
+    await botSay(closing, 900);
+    upsertLead(state.lead);
+    setTimeout(async function () {
+      await botSay("Is there anything else I can help you with? 😊", 600);
+      setTimeout(function () {
+        appendQuickActions();
+        state.phase = PHASE.IDLE;
+        setPlaceholder('Type a message or tap a button above…');
+      }, 800);
+    }, 1400);
+  }
+
+  async function handleFreeText(text) {
+    // Keyword-based routing
+    if (/property\s*management|manage\s*my\s*property|landlord|rental\s*analysis/i.test(text)) {
+      await botSay("Sounds like you're interested in property management! Let me get you set up. 🏠", 700);
+      setTimeout(function () { hermesFlow('propertyManagement'); }, 400);
+      return;
+    }
+    if (/lawn|mow|grass|handyman|pressure\s*wash|maintenance|repair|estimate|quote|how\s*much|cost/i.test(text)) {
+      await botSay("Got it — let's get you an estimate from Hatch Maintenance! 🌿", 700);
+      setTimeout(function () { hermesFlow('lawnMaintenance'); }, 400);
+      return;
+    }
+    if (/tenant|report|broken|leak|issue|request/i.test(text)) {
+      await botSay("I can help you submit a maintenance request. 🔧", 700);
+      setTimeout(function () { hermesFlow('reportMaintenance'); }, 400);
+      return;
+    }
+    if (isEmergency(text)) {
+      appendEmergencyCard();
+      state.phase = PHASE.DONE;
+      setPlaceholder('Type a message…');
+      return;
+    }
+    // Generic fallback
+    await botSay("Happy to help! Here are the ways I can assist you today:", 800);
+    setTimeout(appendQuickActions, 900);
+    state.phase = PHASE.IDLE;
+  }
+
+  /* ── User input handler ──────────────────────────────────── */
+  async function onSubmit() {
+    var inp = qs('h-input');
+    var text = inp.value.trim();
+    if (!text) return;
+    inp.value = '';
+
+    if (state.phase === PHASE.FLOWING) {
+      var flow = FLOWS[state.flowKey];
+      var step = flow.steps[state.stepIdx];
+      // Remove any pending chips for this step
+      if (step && step.options) removeChips(step.field);
+      appendUserText(text);
+      await processAnswer(text);
+      return;
+    }
+
+    // idle / done
+    appendUserText(text);
+    await handleFreeText(text);
+  }
+
+  /* ── Leads panel ─────────────────────────────────────────── */
+  function toggleLeads() {
+    state.leadsOpen = !state.leadsOpen;
+    var panel = qs('h-leads-panel');
+    if (state.leadsOpen) {
+      panel.classList.add('open');
+      renderLeads();
+    } else {
+      panel.classList.remove('open');
+    }
+  }
+
+  function renderLeads() {
+    var body = qs('h-leads-body');
+    if (!state.leads.length) {
+      body.innerHTML =
+        '<div class="h-no-leads">' +
+        '<div class="h-no-leads-icon">📋</div>' +
+        '<div class="h-no-leads-text">No leads captured yet.</div>' +
+        '<div class="h-no-leads-hint">Start a conversation to capture your first lead.</div>' +
+        '</div>';
+      return;
+    }
+    body.innerHTML = '';
+    state.leads.forEach(function (lead) {
+      var card = document.createElement('div');
+      card.className = 'h-lead-card';
+
+      var fields = [
+        lead.email         && ['Email',   lead.email],
+        lead.phone         && ['Phone',   lead.phone],
+        lead.propertyAddress && ['Address', lead.propertyAddress],
+        lead.serviceType   && ['Service', lead.serviceType],
+        lead.propertyCount && ['Units',   lead.propertyCount],
+        lead.issue         && ['Issue',   lead.issue],
+        lead.urgency       && ['Urgency', lead.urgency],
+        lead.timestamp     && ['Time',    lead.timestamp]
+      ].filter(Boolean);
+
+      var fieldsHtml = fields.map(function (f) {
+        return '<div class="h-lead-field">' +
+          '<span class="h-lead-label">' + escHtml(f[0]) + '</span>' +
+          '<span class="h-lead-value">' + escHtml(f[1]) + '</span>' +
+          '</div>';
+      }).join('');
+
+      card.innerHTML =
+        '<div class="h-lead-card-top">' +
+        '<div class="h-lead-name">' + escHtml(lead.name || 'Unknown') + '</div>' +
+        '<div class="h-lead-badge ' + escHtml(lead.badge || 'pm') + '">' + escHtml(lead.type || 'Lead') + '</div>' +
+        '</div>' +
+        fieldsHtml +
+        '<div class="h-lead-notes">' +
+        '<textarea class="h-lead-notes-ta" placeholder="Add notes…" data-lead-id="' + lead.id + '">' +
+        escHtml(lead.notes || '') +
+        '</textarea>' +
+        '</div>';
+
+      body.appendChild(card);
+    });
+
+    // Attach notes change handlers
+    var textareas = body.querySelectorAll('.h-lead-notes-ta');
+    textareas.forEach(function (ta) {
+      ta.addEventListener('change', function () {
+        var id = parseInt(ta.getAttribute('data-lead-id'), 10);
+        var idx = state.leads.findIndex(function (l) { return l.id === id; });
+        if (idx >= 0) {
+          state.leads[idx].notes = ta.value;
+          saveLeads();
+        }
+      });
+    });
+  }
+
+  /* ── Widget open / close ─────────────────────────────────── */
+  function toggleWidget() {
+    state.open = !state.open;
+    var win      = qs('h-window');
+    var launcher = qs('h-launcher');
+    var badge    = qs('h-notif-badge');
+
+    if (state.open) {
+      win.classList.add('open');
+      launcher.classList.add('hidden');
+      badge.classList.remove('show');
+      if (!state.initialized) {
+        state.initialized = true;
+        hermesInit();
+      }
+      setTimeout(function () { qs('h-input').focus(); }, 280);
+    } else {
+      win.classList.remove('open');
+      launcher.classList.remove('hidden');
+      if (state.leadsOpen) toggleLeads(); // close leads panel too
+    }
+  }
+
+  /* ── Boot ────────────────────────────────────────────────── */
+  function boot() {
+    loadLeads();
+    updateLeadsCount();
+
+    // Wire up events
+    qs('h-launcher').addEventListener('click', toggleWidget);
+    qs('h-close-btn').addEventListener('click', toggleWidget);
+    qs('h-leads-btn').addEventListener('click', toggleLeads);
+    qs('h-leads-back').addEventListener('click', toggleLeads);
+    qs('h-send-btn').addEventListener('click', onSubmit);
+    qs('h-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') onSubmit();
+    });
+
+    // Show notification badge after configured delay to invite engagement
+    setTimeout(function () {
+      if (!state.open) {
+        qs('h-notif-badge').classList.add('show');
+      }
+    }, NOTIF_BADGE_DELAY_MS);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+}());
+</script>
+</body>
+</html>

@@ -30,6 +30,16 @@ This application is designed to work with **AUTHORIZED DATA SOURCES ONLY**.
 
 Users of this software are solely responsible for ensuring legal compliance with all applicable laws and regulations. The developers assume no liability for misuse of this application.
 
+
+## Podcast Studio
+
+A standalone podcast launch builder is available in `podcast.html`. Open it in a browser to generate a show concept, pilot episode outline, trailer script, launch checklist, and copy-ready production plan.
+
+```bash
+python -m http.server 8000
+# Visit http://localhost:8000/podcast.html
+```
+
 ## Features
 
 - **Yellow Pages Scraper**: Collect publicly available business listings from Yellow Pages

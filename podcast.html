@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podcast Studio — Create Your Show</title>
+  <style>
+    :root {
+      --bg: #080b12;
+      --panel: #111827;
+      --panel-2: #172033;
+      --text: #edf2ff;
+      --muted: #9aa7bd;
+      --gold: #d4af37;
+      --gold-2: #f5cc50;
+      --line: rgba(212, 175, 55, .2);
+      --ok: #4ade80;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(212,175,55,.18), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(56,189,248,.13), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 48px 0; }
+    .hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 28px; align-items: stretch; margin-bottom: 28px; }
+    .hero-card, .panel {
+      background: linear-gradient(145deg, rgba(17,24,39,.92), rgba(10,15,25,.96));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.38);
+    }
+    .hero-card { padding: 42px; position: relative; overflow: hidden; }
+    .hero-card::after {
+      content: "";
+      position: absolute; inset: auto -90px -120px auto;
+      width: 300px; height: 300px; border-radius: 999px;
+      background: rgba(212,175,55,.09);
+      filter: blur(4px);
+    }
+    .eyebrow { color: var(--gold-2); font-size: 13px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 16px; }
+    h1 { font-size: clamp(2.4rem, 7vw, 5rem); line-height: .95; letter-spacing: -0.06em; max-width: 760px; margin-bottom: 20px; }
+    .lead { color: var(--muted); font-size: 1.1rem; line-height: 1.8; max-width: 680px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .btn {
+      border: 0; border-radius: 999px; padding: 13px 20px;
+      font-weight: 800; cursor: pointer; color: #0d1117;
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      box-shadow: 0 12px 28px rgba(212,175,55,.28);
+    }
+    .btn.secondary { color: var(--text); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); box-shadow: none; }
+    .stats { padding: 30px; display: grid; gap: 16px; }
+    .stat { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 20px; padding: 20px; }
+    .stat strong { display: block; font-size: 2rem; color: var(--gold-2); margin-bottom: 6px; }
+    .stat span { color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+    .grid { display: grid; grid-template-columns: 420px 1fr; gap: 28px; align-items: start; }
+    .panel { padding: 26px; }
+    .panel h2 { font-size: 1.25rem; margin-bottom: 16px; }
+    label { display: block; font-size: 13px; color: var(--muted); font-weight: 700; margin: 16px 0 8px; }
+    input, textarea, select {
+      width: 100%; border: 1px solid rgba(255,255,255,.11); background: #0d1320; color: var(--text);
+      border-radius: 14px; padding: 12px 14px; font: inherit; outline: none;
+    }
+    textarea { min-height: 98px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { border-color: rgba(212,175,55,.58); }
+    .result { display: grid; gap: 18px; }
+    .episode-card { background: var(--panel-2); border: 1px solid rgba(255,255,255,.08); border-radius: 22px; padding: 24px; }
+    .episode-card h3 { font-size: 1.65rem; margin-bottom: 10px; color: #fff; }
+    .tagline { color: var(--gold-2); font-weight: 800; margin-bottom: 16px; }
+    .section-title { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .14em; font-weight: 900; margin: 18px 0 8px; }
+    ul { padding-left: 20px; color: #dbe5f5; line-height: 1.8; }
+    .script { white-space: pre-wrap; color: #dbe5f5; line-height: 1.75; background: rgba(0,0,0,.18); border-radius: 16px; padding: 16px; }
+    .check { color: var(--ok); font-weight: 800; }
+    .toast { min-height: 24px; color: var(--ok); font-size: 13px; margin-top: 12px; }
+
+    @media (max-width: 900px) { .hero, .grid { grid-template-columns: 1fr; } .hero-card { padding: 30px; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-card">
+        <div class="eyebrow">Podcast launch builder</div>
+        <h1>Create a polished podcast concept in minutes.</h1>
+        <p class="lead">Turn your idea into a show name, positioning, episode structure, launch checklist, and first-episode script. Fill out the brief below, generate the plan, then copy it into your production workflow.</p>
+        <div class="hero-actions">
+          <button class="btn" onclick="document.getElementById('brief').scrollIntoView({behavior:'smooth'})">Build my podcast</button>
+          <button class="btn secondary" id="copyAllTop">Copy generated plan</button>
+        </div>
+      </div>
+      <aside class="panel stats" aria-label="Podcast launch highlights">
+        <div class="stat"><strong>01</strong><span>Define the listener, promise, tone, and episode format.</span></div>
+        <div class="stat"><strong>02</strong><span>Generate a ready-to-record pilot outline with segments and questions.</span></div>
+        <div class="stat"><strong>03</strong><span>Leave with launch assets: trailer copy, CTA, checklist, and show notes.</span></div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <form class="panel" id="brief">
+        <h2>Your podcast brief</h2>
+        <label for="topic">Podcast topic</label>
+        <input id="topic" value="local business, property ownership, and practical maintenance tips" />
+
+        <label for="audience">Target listener</label>
+        <input id="audience" value="St. Augustine property owners, landlords, and service-business founders" />
+
+        <label for="host">Host name or brand</label>
+        <input id="host" value="Ancient City PM & Hatch Maintenance" />
+
+        <label for="tone">Tone</label>
+        <select id="tone">
+          <option>Helpful and premium</option>
+          <option>Casual and funny</option>
+          <option>Investigative and serious</option>
+          <option>Motivational and high-energy</option>
+        </select>
+
+        <label for="format">Episode format</label>
+        <select id="format">
+          <option>Solo teaching with guest interviews</option>
+          <option>Two-host conversation</option>
+          <option>Interview show</option>
+          <option>Storytelling / documentary</option>
+        </select>
+
+        <label for="goal">Business goal</label>
+        <textarea id="goal">Build trust, educate owners, capture qualified property management and maintenance leads, and position the brand as the local expert.</textarea>
+
+        <button class="btn" type="submit" style="width:100%; margin-top:20px;">Generate podcast plan</button>
+        <div class="toast" id="toast" role="status"></div>
+      </form>
+
+      <section class="result" id="result" aria-live="polite"></section>
+    </section>
+  </main>
+
+  <script>
+    const result = document.getElementById('result');
+    const toast = document.getElementById('toast');
+
+    function val(id) { return document.getElementById(id).value.trim(); }
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char]));
+    }
+
+    function buildPlan() {
+      const topic = val('topic') || 'your core idea';
+      const audience = val('audience') || 'your ideal listeners';
+      const host = val('host') || 'Your Brand';
+      const tone = val('tone');
+      const format = val('format');
+      const goal = val('goal') || 'grow an engaged audience';
+      const title = topic.toLowerCase().includes('property') ? 'Keys to the Ancient City' : `${host.split('&')[0].trim()} Radio`;
+      const tagline = `A ${tone.toLowerCase()} show for ${audience.toLowerCase()}.`;
+
+      return { topic, audience, host, tone, format, goal, title, tagline,
+        bullets: [
+          `Core promise: help ${audience.toLowerCase()} make smarter decisions about ${topic.toLowerCase()}.`,
+          `Format: ${format.toLowerCase()} with a repeatable 25–35 minute structure.`,
+          `Conversion path: invite listeners to request an estimate, consultation, or resource tied to each episode.`,
+          `Publishing rhythm: weekly for the first 8 weeks, then evaluate downloads, leads, and retention.`
+        ],
+        segments: [
+          'Cold open: one practical problem the listener recognizes immediately.',
+          'Local insight: a market trend, mistake, or quick story from the field.',
+          'Main teaching: 3 actionable takeaways with examples.',
+          'Listener question: answer a common objection or FAQ.',
+          'CTA: offer the next step and repeat the contact path clearly.'
+        ],
+        script: `Welcome to ${title}, hosted by ${host}.\n\nToday we are talking about ${topic} for ${audience}. In the next half hour, you will learn what to watch for, what to avoid, and one simple action you can take this week.\n\nHere is the big idea: expertise should make ownership feel clearer, not more complicated. We will break that down with real examples, practical numbers, and a local perspective.\n\nIf this episode helps, share it with one owner or operator who needs a cleaner plan. To work with ${host}, request a consultation or estimate after the show.`
+      };
+    }
+
+    function renderPlan(plan) {
+      result.innerHTML = `
+        <article class="episode-card" id="planCard">
+          <div class="eyebrow">Generated show concept</div>
+          <h3>${escapeHtml(plan.title)}</h3>
+          <p class="tagline">${escapeHtml(plan.tagline)}</p>
+          <p><span class="check">✓</span> Goal: ${escapeHtml(plan.goal)}</p>
+          <div class="section-title">Positioning</div>
+          <ul>${plan.bullets.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+          <div class="section-title">Pilot episode flow</div>
+          <ul>${plan.segments.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+          <div class="section-title">Trailer / cold-open script</div>
+          <div class="script">${escapeHtml(plan.script)}</div>
+          <div class="section-title">Launch checklist</div>
+          <ul>
+            <li>Name and design square cover art that is readable at thumbnail size.</li>
+            <li>Record a 60–90 second trailer and three pilot episodes before publishing.</li>
+            <li>Create show notes with one clear lead-capture link per episode.</li>
+            <li>Distribute to Spotify, Apple Podcasts, YouTube, and your website.</li>
+          </ul>
+          <button class="btn" id="copyPlan" style="margin-top:18px;">Copy this plan</button>
+        </article>`;
+      document.getElementById('copyPlan').addEventListener('click', copyPlan);
+    }
+
+    function getPlanText() {
+      const card = document.getElementById('planCard');
+      return card ? card.innerText : '';
+    }
+
+    async function copyPlan() {
+      const text = getPlanText();
+      if (!text) { toast.textContent = 'Generate a plan first.'; return; }
+      await navigator.clipboard.writeText(text);
+      toast.textContent = 'Podcast plan copied to clipboard.';
+      setTimeout(() => toast.textContent = '', 2500);
+    }
+
+    document.getElementById('brief').addEventListener('submit', event => {
+      event.preventDefault();
+      renderPlan(buildPlan());
+    });
+    document.getElementById('copyAllTop').addEventListener('click', copyPlan);
+    renderPlan(buildPlan());
+  </script>
+</body>
+</html>

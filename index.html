@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Knight Earthworks provides excavation, landscaping, hardscaping, lawn care, property management, and light construction across Southern Maine.">
+  <title>Knight Earthworks | Southern Maine Landscaping &amp; Excavation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Libre+Franklin:wght@600;700;800&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #17221b;
+      --pine: #173d2b;
+      --pine-light: #24583f;
+      --cream: #f5f0e7;
+      --sand: #d7c5a7;
+      --orange: #e66a2c;
+      --white: #fff;
+      --muted: #66716a;
+      --radius: 22px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: #fff; font-family: "DM Sans", sans-serif; }
+    body.menu-open { overflow: hidden; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
+    .eyebrow { margin: 0 0 12px; color: var(--orange); font-size: .76rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    h1, h2, h3 { margin-top: 0; font-family: "Libre Franklin", sans-serif; letter-spacing: -.035em; }
+    h2 { margin-bottom: 18px; font-size: clamp(2rem, 4.4vw, 3.65rem); line-height: 1.04; }
+    .lead { color: var(--muted); font-size: 1.08rem; line-height: 1.75; }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 22px; border: 0; border-radius: 8px; background: var(--orange); color: #fff; font-weight: 800; text-decoration: none; cursor: pointer; transition: transform .2s, background .2s; }
+    .button:hover { transform: translateY(-2px); background: #c9531d; }
+    .button.outline { border: 1px solid rgba(255,255,255,.5); background: transparent; }
+    .button.outline:hover { background: rgba(255,255,255,.12); }
+
+    .topbar { padding: 9px 0; background: var(--pine); color: #dce8df; font-size: .8rem; }
+    .topbar .wrap { display: flex; justify-content: space-between; gap: 24px; }
+    .topbar a { color: #fff; font-weight: 700; text-decoration: none; }
+    header { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid rgba(23,34,27,.1); background: rgba(255,255,255,.95); backdrop-filter: blur(12px); }
+    nav { display: flex; min-height: 76px; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 12px; color: var(--pine); text-decoration: none; }
+    .brand-mark { position: relative; display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50% 50% 47% 53%; background: var(--orange); color: #fff; font-size: 1.3rem; font-weight: 900; transform: rotate(-7deg); }
+    .brand-mark span { transform: rotate(7deg); }
+    .brand-name { display: block; font-family: "Libre Franklin", sans-serif; font-size: 1.1rem; font-weight: 800; letter-spacing: -.04em; }
+    .brand-sub { display: block; color: #748078; font-size: .64rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { font-size: .9rem; font-weight: 700; text-decoration: none; }
+    .nav-links a:not(.button):hover { color: var(--orange); }
+    .menu-button { display: none; width: 44px; height: 44px; border: 0; background: none; color: var(--pine); cursor: pointer; }
+    .menu-button span { display: block; width: 25px; height: 2px; margin: 5px auto; background: currentColor; transition: .2s; }
+
+    .hero { position: relative; min-height: 690px; overflow: hidden; background: #1b2e23; color: #fff; }
+    .hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: .62; }
+    .hero::after { position: absolute; inset: 0; content: ""; background: linear-gradient(90deg, rgba(12,28,19,.9) 0%, rgba(12,28,19,.65) 52%, rgba(12,28,19,.15) 100%), linear-gradient(0deg, rgba(10,25,17,.55), transparent 45%); }
+    .hero .wrap { position: relative; z-index: 1; display: flex; min-height: 690px; align-items: center; padding-block: 80px; }
+    .hero-copy { max-width: 760px; }
+    .hero .eyebrow { color: #ffb083; }
+    h1 { max-width: 750px; margin-bottom: 24px; font-size: clamp(3.1rem, 7vw, 6.35rem); line-height: .93; }
+    .hero p:not(.eyebrow) { max-width: 630px; margin: 0 0 34px; color: #e5ebe7; font-size: clamp(1.05rem, 2vw, 1.28rem); line-height: 1.65; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .trust-row { display: flex; flex-wrap: wrap; gap: 25px; margin-top: 46px; color: #eff4f0; font-size: .86rem; font-weight: 700; }
+    .trust-row span { display: flex; align-items: center; gap: 8px; }
+    .trust-row span::before { content: "✓"; display: grid; width: 22px; height: 22px; place-items: center; border-radius: 50%; background: rgba(255,255,255,.16); color: #ffb083; }
+
+    .stats { position: relative; z-index: 2; margin-top: -42px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; border-radius: var(--radius); background: var(--cream); box-shadow: 0 18px 55px rgba(24,42,31,.15); }
+    .stat { padding: 27px 32px; border-right: 1px solid #ddcfba; }
+    .stat:last-child { border: 0; }
+    .stat strong { display: block; color: var(--pine); font-family: "Libre Franklin", sans-serif; font-size: 1.55rem; }
+    .stat span { color: var(--muted); font-size: .86rem; }
+
+    section { padding: 110px 0; }
+    .intro-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 80px; }
+    .photo-stack { position: relative; padding: 0 50px 50px 0; }
+    .photo-stack .main-photo { width: 100%; height: 550px; border-radius: var(--radius); object-fit: cover; }
+    .photo-stack .small-photo { position: absolute; right: 0; bottom: 0; width: 47%; height: 230px; border: 8px solid #fff; border-radius: 18px; object-fit: cover; }
+    .experience { position: absolute; top: 28px; right: -20px; width: 132px; padding: 19px; border-radius: 14px; background: var(--orange); color: #fff; box-shadow: 0 13px 35px rgba(100,50,20,.25); }
+    .experience strong { display: block; font-family: "Libre Franklin", sans-serif; font-size: 2rem; }
+    .experience span { font-size: .76rem; font-weight: 700; line-height: 1.35; text-transform: uppercase; }
+    .checklist { display: grid; gap: 13px; margin: 27px 0 34px; padding: 0; list-style: none; }
+    .checklist li { display: flex; gap: 12px; align-items: center; font-weight: 700; }
+    .checklist li::before { content: "✓"; display: grid; width: 26px; height: 26px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #e5eee7; color: var(--pine-light); }
+
+    .services { background: var(--cream); }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 40px; margin-bottom: 48px; }
+    .section-head > div { max-width: 690px; }
+    .section-head .lead { max-width: 390px; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .card { overflow: hidden; border-radius: 18px; background: #fff; box-shadow: 0 7px 26px rgba(25,47,33,.07); transition: transform .25s, box-shadow .25s; }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 18px 42px rgba(25,47,33,.13); }
+    .card img { width: 100%; height: 210px; object-fit: cover; }
+    .card-body { padding: 25px; }
+    .card h3 { margin-bottom: 10px; font-size: 1.25rem; }
+    .card p { margin: 0; color: var(--muted); font-size: .94rem; line-height: 1.65; }
+    .card-number { color: var(--orange); font-size: .72rem; font-weight: 800; letter-spacing: .13em; }
+
+    .process { background: var(--pine); color: #fff; }
+    .process .section-head .lead { color: #b9c9be; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 42px; counter-reset: step; }
+    .step { position: relative; padding-top: 75px; counter-increment: step; }
+    .step::before { position: absolute; top: 0; left: 0; display: grid; width: 52px; height: 52px; place-items: center; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; color: #ffae7d; content: "0" counter(step); font-weight: 800; }
+    .step h3 { margin-bottom: 10px; font-size: 1.25rem; }
+    .step p { margin: 0; color: #b9c9be; line-height: 1.65; }
+
+    .gallery-grid { display: grid; grid-template-columns: 1.15fr .85fr .85fr; grid-template-rows: 270px 270px; gap: 14px; }
+    .gallery-grid figure { position: relative; margin: 0; overflow: hidden; border-radius: 15px; }
+    .gallery-grid figure:first-child { grid-row: 1 / 3; }
+    .gallery-grid img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
+    .gallery-grid figure:hover img { transform: scale(1.04); }
+    .gallery-grid figcaption { position: absolute; inset: auto 0 0; padding: 45px 20px 18px; background: linear-gradient(transparent, rgba(10,25,17,.78)); color: #fff; font-weight: 700; }
+
+    .contact { background: #efe7da; }
+    .contact-box { display: grid; grid-template-columns: .85fr 1.15fr; overflow: hidden; border-radius: 26px; background: #fff; box-shadow: 0 20px 65px rgba(25,47,33,.12); }
+    .contact-copy { padding: 58px; background: var(--pine); color: #fff; }
+    .contact-copy h2 { font-size: clamp(2rem, 4vw, 3.2rem); }
+    .contact-copy > p { color: #c2d0c6; line-height: 1.7; }
+    .contact-list { display: grid; gap: 22px; margin-top: 40px; }
+    .contact-item { display: grid; grid-template-columns: 40px 1fr; gap: 13px; align-items: start; }
+    .contact-item b { display: block; margin-bottom: 3px; color: #ffae7d; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+    .contact-item a { font-weight: 700; text-decoration: none; }
+    .contact-icon { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; background: rgba(255,255,255,.1); }
+    form { padding: 58px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .field.full { grid-column: 1 / -1; }
+    label { display: block; margin-bottom: 7px; font-size: .78rem; font-weight: 800; }
+    input, select, textarea { width: 100%; border: 1px solid #d4d9d5; border-radius: 8px; padding: 13px 14px; background: #fbfcfb; color: var(--ink); outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--pine-light); box-shadow: 0 0 0 3px rgba(36,88,63,.12); }
+    textarea { min-height: 120px; resize: vertical; }
+    form .button { margin-top: 22px; }
+    .form-note { margin: 14px 0 0; color: var(--muted); font-size: .75rem; }
+    .success { display: none; margin-top: 15px; color: var(--pine-light); font-weight: 700; }
+
+    footer { padding: 42px 0; background: #101b14; color: #bdc8c0; }
+    footer .wrap { display: flex; align-items: center; justify-content: space-between; gap: 30px; }
+    footer .brand { color: #fff; }
+    footer p { margin: 0; font-size: .8rem; text-align: right; }
+
+    @media (max-width: 900px) {
+      .nav-links { position: absolute; inset: 100% 0 auto; display: none; padding: 28px 20px 34px; flex-direction: column; align-items: stretch; gap: 8px; background: #fff; box-shadow: 0 20px 30px rgba(0,0,0,.12); }
+      .nav-links.open { display: flex; }
+      .nav-links a { padding: 10px 0; text-align: center; }
+      .menu-button { display: block; }
+      .intro-grid, .contact-box { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .intro-grid { gap: 60px; }
+      .section-head { align-items: start; flex-direction: column; gap: 4px; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-grid figure:first-child { grid-column: 1 / -1; grid-row: auto; }
+      .steps { gap: 26px; }
+    }
+
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 28px, 1180px); }
+      .topbar .wrap span:first-child { display: none; }
+      .topbar .wrap { justify-content: center; }
+      .hero, .hero .wrap { min-height: 650px; }
+      h1 { font-size: clamp(2.85rem, 14vw, 4.2rem); }
+      section { padding: 78px 0; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat { border-right: 0; border-bottom: 1px solid #ddcfba; }
+      .cards, .steps, .form-grid { grid-template-columns: 1fr; }
+      .photo-stack { padding: 0 20px 32px 0; }
+      .photo-stack .main-photo { height: 430px; }
+      .photo-stack .small-photo { height: 160px; }
+      .experience { top: 18px; right: -4px; }
+      .gallery-grid { display: grid; grid-template-columns: 1fr; grid-template-rows: repeat(5, 270px); }
+      .gallery-grid figure:first-child { grid-column: auto; }
+      .contact-copy, form { padding: 36px 25px; }
+      footer .wrap { flex-direction: column; }
+      footer p { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="wrap">
+      <span>Locally owned &amp; operated in Southern Maine</span>
+      <span>Free estimates &nbsp;•&nbsp; <a href="tel:+12076996340">(207) 699-6340</a></span>
+    </div>
+  </div>
+
+  <header>
+    <nav class="wrap" aria-label="Main navigation">
+      <a class="brand" href="#home" aria-label="Knight Earthworks home">
+        <span class="brand-mark" aria-hidden="true"><span>K</span></span>
+        <span><span class="brand-name">Knight Earthworks</span><span class="brand-sub">Biddeford Pool, Maine</span></span>
+      </a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open navigation menu"><span></span><span></span><span></span></button>
+      <div class="nav-links" id="nav-links">
+        <a href="#about">About</a><a href="#services">Services</a><a href="#work">Our Work</a><a href="#process">Our Process</a>
+        <a class="button" href="#contact">Get a Free Estimate →</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <img src="https://images.unsplash.com/photo-1592424002053-21f369ad7fdb?auto=format&amp;fit=crop&amp;w=2000&amp;q=88" alt="Excavator working on a carefully graded landscape">
+      <div class="wrap">
+        <div class="hero-copy">
+          <p class="eyebrow">Landscaping • Hardscaping • Excavation</p>
+          <h1>We shape the land you live on.</h1>
+          <p>From a freshly cut lawn to full-site excavation, Knight Earthworks brings over 20 years of hands-on experience, local knowledge, and uncompromising workmanship to every Southern Maine property.</p>
+          <div class="actions"><a class="button" href="#contact">Request a Free Estimate →</a><a class="button outline" href="tel:+12076996340">Call Will: (207) 699-6340</a></div>
+          <div class="trust-row"><span>Fast response</span><span>Professional service</span><span>Built for Maine</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats wrap" aria-label="Company highlights">
+      <div class="stats-grid"><div class="stat"><strong>20+ years</strong><span>of trusted local experience</span></div><div class="stat"><strong>One call</strong><span>for complete property care</span></div><div class="stat"><strong>Free estimates</strong><span>clear, prompt, and no pressure</span></div></div>
+    </div>
+
+    <section id="about">
+      <div class="wrap intro-grid">
+        <div class="photo-stack">
+          <img class="main-photo" src="https://images.unsplash.com/photo-1599685315640-9ceab2f581ca?auto=format&amp;fit=crop&amp;w=1200&amp;q=85" alt="Professional landscaper mowing a green lawn">
+          <img class="small-photo" src="https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&amp;fit=crop&amp;w=700&amp;q=85" alt="Landscaper carefully tending a garden">
+          <div class="experience"><strong>20+</strong><span>Years getting it done right</span></div>
+        </div>
+        <div>
+          <p class="eyebrow">Meet William Knight</p>
+          <h2>Local roots. Honest work. Results that last.</h2>
+          <p class="lead">Knight Earthworks is led by William “Will” Knight, a lifelong Maine professional who knows local properties from the ground up. For more than two decades, Will has helped homeowners keep, improve, and transform the places they call home.</p>
+          <p class="lead">You get one reliable point of contact, straightforward communication, and the same high standard of work whether the job is weekly mowing, a new patio, light construction, or a precision excavation with our Bobcat E35 and attachments.</p>
+          <ul class="checklist"><li>Owner-led, dependable service</li><li>Respectful care for your home and property</li><li>Versatile equipment for jobs large and small</li></ul>
+          <a class="button" href="#contact">Talk with Will →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="services" id="services">
+      <div class="wrap">
+        <div class="section-head"><div><p class="eyebrow">Everything your property needs</p><h2>We do it all—and do it at the highest level.</h2></div><p class="lead">One experienced local team from first cut to final grade, serving homes and properties throughout Southern Maine.</p></div>
+        <div class="cards">
+          <article class="card"><img src="https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Landscaper working in a lush garden"><div class="card-body"><span class="card-number">01 / LANDSCAPING</span><h3>Landscape installation &amp; care</h3><p>Planting, mulch, bed cleanups, seasonal care, and complete outdoor makeovers designed for Maine.</p></div></article>
+          <article class="card"><img src="https://images.unsplash.com/photo-1592424002053-21f369ad7fdb?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Excavator moving soil on a work site"><div class="card-body"><span class="card-number">02 / EXCAVATION</span><h3>Excavation &amp; site work</h3><p>Digging, grading, drainage, trenching, land clearing, and site preparation with the versatile Bobcat E35.</p></div></article>
+          <article class="card"><img src="https://images.unsplash.com/photo-1623170903597-6e1d5b8efbbc?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Stone patio and walkway in a landscaped yard"><div class="card-body"><span class="card-number">03 / HARDSCAPING</span><h3>Stonework built to last</h3><p>Patios, walkways, retaining walls, fire pits, and functional outdoor spaces built for freeze-thaw seasons.</p></div></article>
+          <article class="card"><img src="https://images.unsplash.com/photo-1599685315640-9ceab2f581ca?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Worker mowing a manicured lawn"><div class="card-body"><span class="card-number">04 / LAWN CARE</span><h3>Mowing &amp; property upkeep</h3><p>Consistent mowing, trimming, cleanup, and seasonal maintenance that keeps your curb appeal sharp.</p></div></article>
+          <article class="card"><img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Well maintained home and landscaped property"><div class="card-body"><span class="card-number">05 / PROPERTY CARE</span><h3>Property management</h3><p>Reliable eyes and hands on your home, with coordinated upkeep and responsive care when you need it.</p></div></article>
+          <article class="card"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&amp;fit=crop&amp;w=900&amp;q=82" alt="Construction professional reviewing work on site"><div class="card-body"><span class="card-number">06 / CONSTRUCTION</span><h3>Light construction</h3><p>Practical repairs, small builds, and exterior improvements completed with thoughtful craftsmanship.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="process" id="process">
+      <div class="wrap">
+        <div class="section-head"><div><p class="eyebrow">Simple from the start</p><h2>Professional service. No runaround.</h2></div><p class="lead">We make it easy to get your outdoor project moving, with fast communication and a clear plan.</p></div>
+        <div class="steps"><div class="step"><h3>Tell us what you need</h3><p>Call, email, or use the form below. Share your idea, concern, or property to-do list directly with Will.</p></div><div class="step"><h3>Get a free estimate</h3><p>We’ll look at the site, discuss practical options, and provide an honest estimate without pressure.</p></div><div class="step"><h3>Enjoy the finished work</h3><p>We show up ready, work safely and efficiently, and leave your property clean and ready to enjoy.</p></div></div>
+      </div>
+    </section>
+
+    <section id="work">
+      <div class="wrap">
+        <div class="section-head"><div><p class="eyebrow">Work we're proud of</p><h2>Made for life outdoors.</h2></div><p class="lead">Beautiful, useful spaces and well-kept properties—delivered with Maine pride.</p></div>
+        <div class="gallery-grid">
+          <figure><img src="https://images.unsplash.com/photo-1558904541-efa843a96f0f?auto=format&amp;fit=crop&amp;w=1200&amp;q=86" alt="Landscaping professional tending a beautiful garden"><figcaption>Landscape care</figcaption></figure>
+          <figure><img src="https://images.unsplash.com/photo-1623170903597-6e1d5b8efbbc?auto=format&amp;fit=crop&amp;w=900&amp;q=86" alt="Finished stone patio beside a home"><figcaption>Patios &amp; hardscapes</figcaption></figure>
+          <figure><img src="https://images.unsplash.com/photo-1599685315640-9ceab2f581ca?auto=format&amp;fit=crop&amp;w=900&amp;q=86" alt="Fresh lawn being professionally mowed"><figcaption>Lawn maintenance</figcaption></figure>
+          <figure><img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&amp;fit=crop&amp;w=900&amp;q=86" alt="Home with a cared-for green landscape"><figcaption>Complete property care</figcaption></figure>
+          <figure><img src="https://images.unsplash.com/photo-1592424002053-21f369ad7fdb?auto=format&amp;fit=crop&amp;w=900&amp;q=86" alt="Excavator performing site work"><figcaption>Precision excavation</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="wrap contact-box">
+        <div class="contact-copy"><p class="eyebrow">Let's get to work</p><h2>Your property deserves the Knight standard.</h2><p>Contact Will for a quick, free estimate anywhere in our Southern Maine service area.</p><div class="contact-list"><div class="contact-item"><span class="contact-icon">☎</span><div><b>Call or text</b><a href="tel:+12076996340">(207) 699-6340</a></div></div><div class="contact-item"><span class="contact-icon">✉</span><div><b>Email</b><a href="mailto:wiknight86@gmail.com">wiknight86@gmail.com</a></div></div><div class="contact-item"><span class="contact-icon">⌖</span><div><b>Based in</b><span>Biddeford Pool, Maine<br>Serving Southern Maine</span></div></div></div></div>
+        <form id="estimate-form">
+          <p class="eyebrow">Request your free estimate</p><h3>Tell us about your project.</h3>
+          <div class="form-grid">
+            <div class="field"><label for="name">Your name</label><input id="name" name="name" autocomplete="name" required></div>
+            <div class="field"><label for="phone">Phone number</label><input id="phone" name="phone" type="tel" autocomplete="tel" required></div>
+            <div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+            <div class="field"><label for="service">What can we help with?</label><select id="service" name="service"><option>Excavation / site work</option><option>Landscaping</option><option>Hardscaping</option><option>Lawn care</option><option>Property management</option><option>Light construction</option><option>Something else</option></select></div>
+            <div class="field full"><label for="details">Project details</label><textarea id="details" name="details" placeholder="Tell us about the property, your goals, and your preferred timeline..."></textarea></div>
+          </div>
+          <button class="button" type="submit">Send Estimate Request →</button><p class="form-note">Submitting opens your email app with your project details pre-filled. No spam—just a response from Will.</p><p class="success" role="status">Your email draft is ready. If it did not open, call Will at (207) 699-6340.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap"><a class="brand" href="#home"><span class="brand-mark"><span>K</span></span><span><span class="brand-name">Knight Earthworks</span><span class="brand-sub">Southern Maine</span></span></a><p>© <span id="year"></span> Knight Earthworks LLC.<br>Landscaping • Hardscaping • Excavation • Property Care</p></div></footer>
+
+  <script>
+    const menuButton = document.querySelector('.menu-button');
+    const navLinks = document.querySelector('.nav-links');
+    menuButton.addEventListener('click', () => {
+      const open = navLinks.classList.toggle('open');
+      menuButton.setAttribute('aria-expanded', String(open));
+      document.body.classList.toggle('menu-open', open);
+    });
+    navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      menuButton.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('menu-open');
+    }));
+    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById('estimate-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      const subject = encodeURIComponent(`Free estimate request: ${data.get('service')}`);
+      const body = encodeURIComponent(`Name: ${data.get('name')}\nPhone: ${data.get('phone')}\nEmail: ${data.get('email')}\nService: ${data.get('service')}\n\nProject details:\n${data.get('details') || 'Not provided'}`);
+      event.currentTarget.querySelector('.success').style.display = 'block';
+      window.location.href = `mailto:wiknight86@gmail.com?subject=${subject}&body=${body}`;
+    });
+  </script>
+</body>
+</html>

@@ -1,5 +1,14 @@
 # Vehicle Buyer Finder
 
+## Knight Earthworks website
+
+The repository root now includes a responsive, standalone marketing site for Knight Earthworks in `index.html`. To preview it locally:
+
+```bash
+python -m http.server 8000
+# Visit http://localhost:8000/
+```
+
 A Python application for identifying potential vehicle buyers by aggregating data from Yellow Pages and authorized DMV sources in the Jacksonville and Saint Augustine, Florida areas.
 
 ## ⚠️ Important Legal Notice
